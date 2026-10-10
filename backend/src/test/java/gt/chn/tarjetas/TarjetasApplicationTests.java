@@ -1,10 +1,10 @@
-package gt.chn.cards;
+package gt.chn.tarjetas;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CardsApplicationTests {
+class TarjetasApplicationTests {
 
 	@Test
 	void contextLoads() {
