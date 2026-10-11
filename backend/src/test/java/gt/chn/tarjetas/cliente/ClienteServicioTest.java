@@ -1,7 +1,7 @@
 package gt.chn.tarjetas.cliente;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import gt.chn.tarjetas.compartido.error.CodigoError;
 import gt.chn.tarjetas.compartido.error.ExcepcionNegocio;
@@ -29,46 +30,52 @@ class ClienteServicioTest {
     @BeforeEach
     void preparar() {
         repositorio = mock(ClienteRepositorio.class);
+
         Clock relojFijo = Clock.fixed(Instant.parse("2026-10-11T12:00:00Z"), ZoneOffset.UTC);
         servicio = new ClienteServicio(repositorio, relojFijo);
-        when(repositorio.saveAndFlush(any(Cliente.class))).thenAnswer(inv -> inv.getArgument(0));
     }
 
-    private static ClienteSolicitud solicitud(String identificacion) {
+    private ClienteSolicitud solicitud(String identificacion) {
         return new ClienteSolicitud("Ana", "Pérez", identificacion, LocalDate.of(1990, 5, 20),
                 "Zona 1", "ana@correo.com", "55551234");
     }
 
-    private static void esperarCodigo(Throwable error, CodigoError esperado) {
-        assertThat(error).isInstanceOf(ExcepcionNegocio.class);
-        assertThat(((ExcepcionNegocio) error).getCodigo()).isEqualTo(esperado);
+    private Cliente clienteExistente() {
+        return new Cliente("Ana", "Pérez", "1234567-8", LocalDate.of(1990, 5, 20),
+                "Zona 1", "ana@correo.com", "55551234", LocalDateTime.of(2026, 1, 1, 0, 0));
     }
 
     @Test
     void crearGuardaElClienteYDevuelveSusDatos() {
         when(repositorio.contarPorIdentificacionIncluidosEliminados("1234567-8")).thenReturn(0L);
+        when(repositorio.saveAndFlush(any(Cliente.class))).thenReturn(clienteExistente());
 
         ClienteRespuesta respuesta = servicio.crear(solicitud("1234567-8"));
 
-        assertThat(respuesta.nombre()).isEqualTo("Ana");
-        assertThat(respuesta.numeroIdentificacion()).isEqualTo("1234567-8");
+        assertEquals("Ana", respuesta.nombre());
+        assertEquals("1234567-8", respuesta.numeroIdentificacion());
     }
 
     @Test
     void crearQuitaLosEspaciosDeLaIdentificacion() {
         when(repositorio.contarPorIdentificacionIncluidosEliminados("1234567-8")).thenReturn(0L);
+        when(repositorio.saveAndFlush(any(Cliente.class))).thenReturn(clienteExistente());
 
-        ClienteRespuesta respuesta = servicio.crear(solicitud("  1234567-8  "));
+        servicio.crear(solicitud("  1234567-8  "));
 
-        assertThat(respuesta.numeroIdentificacion()).isEqualTo("1234567-8");
+        ArgumentCaptor<Cliente> capturador = ArgumentCaptor.forClass(Cliente.class);
+        verify(repositorio).saveAndFlush(capturador.capture());
+        assertEquals("1234567-8", capturador.getValue().getNumeroIdentificacion());
     }
 
     @Test
     void crearConIdentificacionRepetidaFallaYNoGuarda() {
         when(repositorio.contarPorIdentificacionIncluidosEliminados("1234567-8")).thenReturn(1L);
 
-        assertThatThrownBy(() -> servicio.crear(solicitud("1234567-8")))
-                .satisfies(error -> esperarCodigo(error, CodigoError.IDENTIFICACION_YA_EXISTE));
+        ExcepcionNegocio error = assertThrows(ExcepcionNegocio.class,
+                () -> servicio.crear(solicitud("1234567-8")));
+
+        assertEquals(CodigoError.IDENTIFICACION_YA_EXISTE, error.getCodigo());
         verify(repositorio, never()).saveAndFlush(any());
     }
 
@@ -76,31 +83,34 @@ class ClienteServicioTest {
     void obtenerUnClienteInexistenteFalla() {
         when(repositorio.findById(99L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> servicio.obtener(99L))
-                .satisfies(error -> esperarCodigo(error, CodigoError.CLIENTE_NO_ENCONTRADO));
+        ExcepcionNegocio error = assertThrows(ExcepcionNegocio.class,
+                () -> servicio.obtener(99L));
+
+        assertEquals(CodigoError.CLIENTE_NO_ENCONTRADO, error.getCodigo());
     }
 
     @Test
     void editarCambiaLosDatosPeroNoLaIdentificacion() {
-        Cliente existente = new Cliente("Ana", "Pérez", "1234567-8", LocalDate.of(1990, 5, 20),
-                "Zona 1", "ana@correo.com", "55551234", LocalDateTime.of(2026, 1, 1, 0, 0));
-        when(repositorio.findById(1L)).thenReturn(Optional.of(existente));
-
-        var edicion = new ClienteEdicion("Ana María", "López", LocalDate.of(1991, 6, 21),
+        when(repositorio.findById(1L)).thenReturn(Optional.of(clienteExistente()));
+        ClienteEdicion edicion = new ClienteEdicion("Ana María", "López", LocalDate.of(1991, 6, 21),
                 "Zona 10", "nuevo@correo.com", "44440000");
+
         ClienteRespuesta respuesta = servicio.editar(1L, edicion);
 
-        assertThat(respuesta.nombre()).isEqualTo("Ana María");
-        assertThat(respuesta.correoElectronico()).isEqualTo("nuevo@correo.com");
-        assertThat(respuesta.numeroIdentificacion()).isEqualTo("1234567-8");
+        assertEquals("Ana María", respuesta.nombre());
+        assertEquals("nuevo@correo.com", respuesta.correoElectronico());
+        assertEquals("1234567-8", respuesta.numeroIdentificacion());
     }
 
     @Test
     void editarUnClienteInexistenteFalla() {
         when(repositorio.findById(99L)).thenReturn(Optional.empty());
-        var edicion = new ClienteEdicion("A", "B", LocalDate.of(1990, 1, 1), "d", "a@b.com", "1");
+        ClienteEdicion edicion = new ClienteEdicion("A", "B", LocalDate.of(1990, 1, 1),
+                "dirección", "a@b.com", "1");
 
-        assertThatThrownBy(() -> servicio.editar(99L, edicion))
-                .satisfies(error -> esperarCodigo(error, CodigoError.CLIENTE_NO_ENCONTRADO));
+        ExcepcionNegocio error = assertThrows(ExcepcionNegocio.class,
+                () -> servicio.editar(99L, edicion));
+
+        assertEquals(CodigoError.CLIENTE_NO_ENCONTRADO, error.getCodigo());
     }
 }
