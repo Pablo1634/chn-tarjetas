@@ -1,0 +1,90 @@
+.pagina-clientes {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.encabezado-pagina {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.encabezado-pagina h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.encabezado-pagina p {
+  margin: 0;
+  color: #616161;
+}
+
+.encabezado-pagina button {
+  min-height: 44px;
+}
+
+.encabezado-pagina mat-icon {
+  margin-right: 8px;
+}
+
+.tarjeta-contenido {
+  padding: 8px;
+}
+
+.tarjeta-contenido mat-card-header {
+  margin-bottom: 16px;
+}
+
+.mensaje-vacio {
+  padding: 32px 16px;
+  text-align: center;
+  color: #757575;
+}
+
+.tabla-contenedor {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.tabla-contenedor table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-contenedor th,
+.tabla-contenedor td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e0e6ed;
+}
+
+.tabla-contenedor th {
+  color: #455a64;
+  background-color: #f5f7fb;
+  font-weight: 600;
+}
+
+.tabla-contenedor td {
+  color: #37474f;
+}
+
+.mensaje-error {
+  padding: 16px;
+  color: #b71c1c;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .pagina-clientes {
+    padding: 16px;
+  }
+
+  .encabezado-pagina {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

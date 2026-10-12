@@ -1,0 +1,204 @@
+
+<section class="pagina-tarjetas">
+  <header class="encabezado">
+    <div>
+      <h1>Tarjetas de crédito</h1>
+      <p>Consulta tarjetas, saldos y movimientos.</p>
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="cargarTarjetas()"
+    >
+      Actualizar
+    </button>
+  </header>
+
+  @if (cargando) {
+    <mat-card>
+      <mat-card-content>Cargando tarjetas...</mat-card-content>
+    </mat-card>
+  } @else {
+    @if (mensaje) {
+      <p class="mensaje">{{ mensaje }}</p>
+    }
+
+    @if (tarjetas.length === 0) {
+      <mat-card>
+        <mat-card-content>No hay tarjetas registradas.</mat-card-content>
+      </mat-card>
+    } @else {
+      <div class="lista-tarjetas">
+        @for (tarjeta of tarjetas; track tarjeta.id) {
+          <mat-card class="tarjeta">
+            <mat-card-header>
+              <mat-card-title>
+                Tarjeta #{{ tarjeta.id }}
+              </mat-card-title>
+              <mat-card-subtitle>
+                Cliente #{{ tarjeta.clienteId }}
+              </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <p>
+                <strong>Número de tarjeta:</strong>
+                {{ tarjeta.numeroTarjeta }}
+              </p>
+
+              <p><strong>Tipo:</strong> {{ tarjeta.tipoTarjeta }}</p>
+
+              <p>
+                <strong>Límite de crédito:</strong>
+                {{ tarjeta.limiteCredito | currency:'GTQ':'Q ' }}
+              </p>
+
+              <p>
+                <strong>Saldo actual:</strong>
+                {{ tarjeta.saldoActual | currency:'GTQ':'Q ' }}
+              </p>
+
+              <p>
+                <strong>Fecha de emisión:</strong>
+                {{ tarjeta.fechaEmision | date:'dd/MM/yyyy HH:mm' }}
+              </p>
+
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="verMovimientos(tarjeta.id)"
+              >
+                Ver movimientos
+              </button>
+            </mat-card-content>
+          </mat-card>
+        }
+      </div>
+    }
+  }
+
+  @if (tarjetaSeleccionada !== null) {
+    <section class="seccion-movimientos">
+      <header class="encabezado-movimientos">
+        <div>
+          <h2>Movimientos de la tarjeta #{{ tarjetaSeleccionada }}</h2>
+          <p>Consulta el historial y registra operaciones.</p>
+        </div>
+
+        <button mat-button (click)="cerrarMovimientos()">
+          Cerrar
+        </button>
+      </header>
+
+      <mat-card class="formulario-operacion">
+        <mat-card-header>
+          <mat-card-title>Registrar consumo o pago</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form (ngSubmit)="registrarOperacion()">
+            <label for="tipoOperacion">Tipo de operación</label>
+            <select
+              id="tipoOperacion"
+              name="tipoOperacion"
+              [(ngModel)]="tipoOperacion"
+              required
+            >
+              <option value="CONSUMO">Consumo</option>
+              <option value="PAGO">Pago</option>
+            </select>
+
+            <label for="montoOperacion">Monto (Q)</label>
+            <input
+              id="montoOperacion"
+              name="montoOperacion"
+              type="number"
+              min="0.01"
+              step="0.01"
+              [(ngModel)]="montoOperacion"
+              required
+            />
+
+            <label for="descripcionOperacion">Descripción</label>
+            <input
+              id="descripcionOperacion"
+              name="descripcionOperacion"
+              [(ngModel)]="descripcionOperacion"
+              maxlength="250"
+              required
+            />
+
+            @if (mensajeOperacion) {
+              <p class="mensaje">{{ mensajeOperacion }}</p>
+            }
+
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="guardandoOperacion"
+            >
+              {{
+                guardandoOperacion
+                  ? 'Guardando...'
+                  : 'Registrar operación'
+              }}
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <h3>Historial de movimientos</h3>
+
+      @if (cargandoMovimientos) {
+        <mat-card>
+          <mat-card-content>Cargando movimientos...</mat-card-content>
+        </mat-card>
+      } @else {
+        @if (mensajeMovimientos) {
+          <p class="mensaje">{{ mensajeMovimientos }}</p>
+        }
+
+        @if (movimientos.length === 0 && !mensajeMovimientos) {
+          <mat-card>
+            <mat-card-content>
+              Esta tarjeta no tiene movimientos registrados.
+            </mat-card-content>
+          </mat-card>
+        }
+
+        @for (movimiento of movimientos; track movimiento.id) {
+          <mat-card class="movimiento">
+            <mat-card-content>
+              <p>
+                <strong>Tipo:</strong>
+                {{ movimiento.tipoMovimiento }}
+              </p>
+
+              <p>
+                <strong>Monto:</strong>
+                {{ movimiento.monto | currency:'GTQ':'Q ' }}
+              </p>
+
+              <p>
+                <strong>Fecha:</strong>
+                {{ movimiento.fechaMovimiento | date:'dd/MM/yyyy' }}
+              </p>
+
+              <p>
+                <strong>Descripción:</strong>
+                {{ movimiento.descripcion }}
+              </p>
+
+              <p>
+                <strong>Registrado:</strong>
+                {{ movimiento.creadoEn | date:'dd/MM/yyyy HH:mm' }}
+              </p>
+            </mat-card-content>
+          </mat-card>
+        }
+      }
+    </section>
+  }
+</section>

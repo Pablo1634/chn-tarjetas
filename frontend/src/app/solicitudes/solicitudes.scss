@@ -1,0 +1,65 @@
+.pagina-solicitudes {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.encabezado-solicitudes {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.encabezado-solicitudes h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.encabezado-solicitudes p {
+  margin: 0;
+  color: #616161;
+}
+
+.lista-solicitudes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.tarjeta-solicitud {
+  padding: 12px;
+}
+
+.tarjeta-solicitud mat-card-content {
+  padding-top: 16px;
+}
+
+.tarjeta-solicitud p {
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+
+.acciones {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.mensaje {
+  padding: 12px;
+  background: #f5f7fb;
+  border-radius: 6px;
+}
+
+@media (max-width: 600px) {
+  .pagina-solicitudes {
+    padding: 16px;
+  }
+
+  .encabezado-solicitudes {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

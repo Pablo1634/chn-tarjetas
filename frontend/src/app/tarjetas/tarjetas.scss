@@ -1,0 +1,116 @@
+
+.pagina-tarjetas {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.encabezado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.encabezado h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.encabezado p {
+  margin: 0;
+  color: #616161;
+}
+
+.lista-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.tarjeta {
+  padding: 12px;
+}
+
+.tarjeta mat-card-content {
+  padding-top: 16px;
+}
+
+.tarjeta p,
+.movimiento p {
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+
+.mensaje {
+  padding: 12px;
+  background: #f5f7fb;
+  border-radius: 6px;
+  color: #b3261e;
+  overflow-wrap: anywhere;
+}
+
+.seccion-movimientos {
+  margin-top: 32px;
+}
+
+.encabezado-movimientos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.encabezado-movimientos h2 {
+  margin: 0 0 8px;
+}
+
+.encabezado-movimientos p {
+  color: #616161;
+  margin: 0;
+}
+
+.formulario-operacion {
+  margin-bottom: 24px;
+  padding: 12px;
+}
+
+.formulario-operacion mat-card-content {
+  padding-top: 16px;
+}
+
+.formulario-operacion form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formulario-operacion input,
+.formulario-operacion select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+  font: inherit;
+  background: white;
+}
+
+.movimiento {
+  margin-bottom: 12px;
+  padding: 8px;
+}
+
+@media (max-width: 600px) {
+  .pagina-tarjetas {
+    padding: 16px;
+  }
+
+  .encabezado,
+  .encabezado-movimientos {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

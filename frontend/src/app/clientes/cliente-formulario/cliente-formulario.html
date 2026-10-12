@@ -1,0 +1,118 @@
+<section class="pagina-formulario">
+  <header class="encabezado-formulario">
+    <div>
+      <h1>Nuevo cliente</h1>
+      <p>Ingresa los datos personales y de contacto del cliente.</p>
+    </div>
+  </header>
+
+  <mat-card class="tarjeta-formulario">
+    <mat-card-header>
+      <mat-card-title>Datos del cliente</mat-card-title>
+      <mat-card-subtitle>
+        Los campos marcados son obligatorios.
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="formularioCliente" (ngSubmit)="guardar()">
+        <div class="rejilla-formulario">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" maxlength="100" />
+            @if (formularioCliente.controls.nombre.hasError('required')
+              && formularioCliente.controls.nombre.touched) {
+              <mat-error>El nombre es obligatorio.</mat-error>
+            }
+            @if (mensajeError) {
+                <div class="mensaje-error" role="alert">
+                    {{ mensajeError }}
+                </div>
+                }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Apellido</mat-label>
+            <input matInput formControlName="apellido" maxlength="100" />
+            @if (formularioCliente.controls.apellido.hasError('required')
+              && formularioCliente.controls.apellido.touched) {
+              <mat-error>El apellido es obligatorio.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Número de identificación</mat-label>
+            <input matInput formControlName="numeroIdentificacion" maxlength="30" />
+            @if (formularioCliente.controls.numeroIdentificacion.hasError('required')
+              && formularioCliente.controls.numeroIdentificacion.touched) {
+              <mat-error>La identificación es obligatoria.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de nacimiento</mat-label>
+            <input matInput type="date" formControlName="fechaNacimiento" />
+            @if (formularioCliente.controls.fechaNacimiento.hasError('required')
+              && formularioCliente.controls.fechaNacimiento.touched) {
+              <mat-error>La fecha de nacimiento es obligatoria.</mat-error>
+            }
+            @if (formularioCliente.controls.fechaNacimiento.hasError('fechaNacimientoInvalida')
+                && formularioCliente.controls.fechaNacimiento.touched) {
+            <mat-error>La fecha debe ser anterior a hoy.</mat-error>
+}
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput type="email" formControlName="correoElectronico" maxlength="150" />
+            @if (formularioCliente.controls.correoElectronico.hasError('required')
+              && formularioCliente.controls.correoElectronico.touched) {
+              <mat-error>El correo electrónico es obligatorio.</mat-error>
+            }
+            @if (formularioCliente.controls.correoElectronico.hasError('email')
+              && formularioCliente.controls.correoElectronico.touched) {
+              <mat-error>Ingresa un correo electrónico válido.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Teléfono</mat-label>
+            <input matInput type="tel" formControlName="telefono" maxlength="20" />
+            @if (formularioCliente.controls.telefono.hasError('required')
+              && formularioCliente.controls.telefono.touched) {
+              <mat-error>El teléfono es obligatorio.</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="campo-completo">
+            <mat-label>Dirección</mat-label>
+            <textarea
+              matInput
+              formControlName="direccion"
+              maxlength="250"
+              rows="3">
+            </textarea>
+            @if (formularioCliente.controls.direccion.hasError('required')
+              && formularioCliente.controls.direccion.touched) {
+              <mat-error>La dirección es obligatoria.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="acciones-formulario">
+          <button mat-button type="button">
+            Cancelar
+          </button>
+
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar cliente' }}
+            </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>
